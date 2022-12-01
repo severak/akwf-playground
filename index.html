@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SK1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/uboot.css">
+    <link rel="stylesheet" href="css/gh-fork-ribbon.css">
+    <script src="js/bluescreen.js"></script>
+    <script src="js/uboot.js"></script>
+    <script src="js/JZZ.js"></script>
+    <script src="js/JZZ.input.Kbd.js"></script>
+    <script src="js/JZZ.gui.Select.js"></script>
+    <script src="js/wavy-jones.js"></script>
+    <script src="js/heartbeat.js"></script>
+    <script src="js/wave-encoder-polyfill.js"></script>
+    <style>
+        body {
+            font-family: "Lucida Console", monospace;
+            background-color: plum;
+        }
+
+        .ub-box {
+            background-color: lightyellow;
+        }
+
+        a { color: black; text-decoration-style: dashed; text-decoration-thickness: 1px; }
+
+        #scope {
+            padding: 0;
+            width: 100%;
+            height: 80px;
+            background-color: #000;
+        }
+
+        #recording_download {
+            color: black;
+            text-decoration-style: dashed;
+        }
+    </style>
+</head>
+<body>
+
+<a class="github-fork-ribbon" href="https://github.com/severak/cyber-music-studio" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
+
+<div class="ub-container">
+
+    <h1>sample propulsion laboratory</h1>
+
+    <div class="ub-box" id="box_welcome">
+        <img src="img/preview.png" class="ub-fit-img">
+        <p>This is part of beta version of Cyber Music Studio™. It's not finished yet and can be broken at any moment.</p>
+        <p>Feel free to test it and report bugs <a href="https://github.com/severak/cyber-music-studio/issues" target="_blank">here</a>.</p>
+        <center><button id="power" class="ub-button"><big>OK</big></button></center>
+    </div>
+    <br><br>
+
+
+
+    <form class="ub-form ub-hidden" id="form">
+        <div class="ub-box" id="box_traveller" style="background-color: lightseagreen">
+            <div class="ub-cols">
+                <div class="ub-same" style="text-align: center">
+                    <canvas style="width: 440px; height: 40px; background-color: white" id="waveform"></canvas>
+                </div>
+            </div>
+
+            <div><strong>ENVELOPE</strong></div>
+
+            <div class="ub-cols">
+                <div class="ub-same">
+                    A <input type="range" min="0.01" max="1" step="0.01" value="0.01" id="sk1_attack">
+                </div>
+                <div class="ub-same">
+                    D <input type="range" min="0.01" max="1" step="0.01" value="0.25" id="sk1_decay">
+                </div>
+                <div class="ub-same">
+                    S <input type="range" min="0" max="1" step="0.1" value="0.8" id="sk1_sustain">
+                </div>
+                <div class="ub-same">
+                    R <input type="range" min="0.01" max="1" step="0.1" value="0.5" id="sk1_release">
+                </div>
+            </div>
+
+            <div><strong>SIMPLE WAVEFORMS</strong></div>
+
+            <div class="ub-cols">
+                <div class="ub-same">
+                    <button id="sin">SIN</button>
+                    <button id="sqr">SQR</button>
+                    <button id="pwm">PWM</button>
+                    <button id="noise">NOISE</button>
+                    <button id="saw">SAW</button>
+                    <button id="tri">TRIANGLE</button>
+                    <button id="triasin">TRIASIN</button>
+                    <button id="triasin2">TRIASIN 1/2</button>
+                    <button id="cirkule">CIRKULE</button>
+                    <button id="metalik">METALIK</button>
+                    <button id="noisey">NOISEY</button>
+                </div>
+            </div>
+
+            <div><strong>COMPLEX WAVEFORMS</strong></div>
+
+            <div class="ub-cols">
+                <div class="ub-same">
+                    UNO SYNTH WAVEFORM:
+                    <input type="range" id="unowave" min="0" max="127" step="1">
+                </div>
+            </div>
+            <div>
+                <button id="organ">GENERATE ORGAN SOUND</button>
+            </div>
+
+            <div class="ub-cols">
+                <div class="ub-same"><label><input type="checkbox" id="org1" > 16"</label></div>
+                <div class="ub-same"><label><input type="checkbox" id="org2" > 8"</label></div>
+                <div class="ub-same"><label><input type="checkbox" id="org3" > 5 ⅓"</label></div>
+                <div class="ub-same"><label><input type="checkbox" id="org4" > 4"</label></div>
+            </div>
+
+            <div><strong>CUSTOM SOUND</strong></div>
+
+            <div>
+                <input type="file" accept="audio/wav" id="choose_sample">
+            </div>
+
+            <div><strong>COMMON</strong></div>
+
+            <div class="ub-cols">
+                <div class="ub-same" style="text-align: center">
+                    <div id="keyboard3"></div>
+                </div>
+            </div>
+
+            <div class="ub-cols">
+                <div class="ub-same">
+                    VOL
+                    <input type="range" id="vol" min="0" max="1" step="0.01" value="0.5">
+                </div>
+                <div class="ub-same">
+                    MIDI input: <select id="select_midi_in3"></select>
+                </div>
+            </div>
+
+            <div><strong>MIXING &amp; RECORDING</strong></div>
+
+            <div class="ub-cols">
+                <div class="ub-same">
+                    HI <input type="range" min="-20" max="20" step="0.01" value="0" id="bus_hi">
+                </div>
+                <div class="ub-same">
+                    MID <input type="range" min="-20" max="20" step="0.01" value="0" id="bus_mid">
+                </div>
+                <div class="ub-same">
+                    LO <input type="range" min="-20" max="20" step="0.01" value="0" id="bus_low">
+                </div>
+                <div class="ub-same">
+                    PAN <input type="range" min="-1" max="1" step="0.01" value="0" id="bus_pan">
+                </div>
+                <div class="ub-same">
+                    REVERB <input type="range" min="0" max="1" step="0.01" value="0" id="bus_reverb">
+                </div>
+                <div class="ub-same">
+                    VOL <input type="range" min="0" max="1" step="0.01" value="0.5" id="bus_vol">
+                </div>
+            </div>
+
+            <div class="ub-cols">
+                <div class="ub-same"><button id="record">RECORD</button></div>
+                <div class="ub-same"><button id="stop">STOP</button></div>
+                <div class="ub-same"><button id="play">PLAY</button></div>
+                <div class="ub-same"><a href="#" id="recording_download" class="ub-hidden">DOWNLOAD IT</a></div>
+            </div>
+
+
+        </div>
+
+    <p>part of <a href="index.html">Cyber Music Studio™</a></p>
+
+    </form>
+</div>
+
+<script>
+    function keyboardMidiWrap(keyboardElemId, midiSelectorId, synth) {
+        // set up routing from external MIDI via HTML keyboard to synth itself
+        var kbd = JZZ.input.Kbd({ at:keyboardElemId, pos:'N', wl: 50, ww:21, bl: 25, bw:12, from:'F4', to:'C7' });
+        var midiIn = JZZ.gui.SelectMidiIn({ at: midiSelectorId });
+        kbd.connect(function (msg) {
+            hb.midi2call(msg, synth);
+        });
+
+        // handles all the selection stuff
+        midiIn.onSelect = function(name) {
+            JZZ().openMidiIn(name).and(function () {
+                if (kbd.currentExternal) kbd.currentExternal.disconnect(kbd);
+                this.connect(kbd);
+                kbd.currentExternal = this;
+            }).or(function () {
+                if (kbd.currentExternal) kbd.currentExternal.disconnect(kbd);
+            });
+        };
+    }
+
+    function showWave(buffer) {
+        var amp = 1;
+        var data = buffer.getChannelData(0);
+        var ctx = ub.gebi('waveform').getContext("2d");
+        ub.gebi('waveform').width = 440;
+        ub.gebi('waveform').height = 40;
+        ctx.fillStyle = '#000';
+
+        ctx.fillRect(0,0,440,80);
+
+        ctx.strokeStyle = '#fff';
+        ctx.beginPath();
+        ctx.moveTo(0, 20);
+        ctx.lineTo(440, 20);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#00ff00';
+        ctx.beginPath();
+        ctx.moveTo(0, (data[0] * 20 * amp) + 20);
+        for (var n = 0; n < buffer.length; n++) {
+            var y = (data[n] * 20 * amp) + 20;
+            ctx.lineTo(n, y);
+        }
+        ctx.stroke();
+    }
+
+    // TODO - single' Cycle Sampler
+    function _base64ToArrayBuffer(base64) {
+        var binary_string = window.atob(base64);
+        var len = binary_string.length;
+        var bytes = new Uint8Array(len);
+        for (var i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes.buffer;
+    }
+
+    sk1 = function(out) {
+        var me = {};
+
+        me.vol = 0.5;
+
+        me.attack = 0.1;
+        me.decay = 0.1;
+        me.sustain = 0.8;
+        me.release = 0.5;
+
+        me.once = false;
+        me.buffer = hb.ac.createBuffer(1, hb.ac.sampleRate * 1, hb.ac.sampleRate);
+
+        me._ac = hb.ac;
+        if (!out) out = hb.ac.destination;
+        me._out = out;
+
+        me._vol = hb.makeGain(me.vol);
+        me._vol.gain.setValueAtTime(me.vol, me._ac.currentTime);
+        me._vol.connect(me._out);
+
+        // me._notes = [];
+        me._voices = {};
+
+        me.param = function(name, val) {
+            me[name] = val;
+            if (name=='vol') me._vol.gain.setValueAtTime(me.vol, me._ac.currentTime);
+        };
+
+        me._getEnv = function(max) {
+            return {
+                max: max,
+                attack: me.attack,
+                decay: me.decay,
+                sustain: me.sustain,
+                release: me.release
+            };
+        };
+
+        me._makeVoice = function(nn) {
+            var ac = hb.ac;
+            var freq = hb.midi2cps(nn);
+            var vox = {};
+            vox._osc = me.once ? hb.makeSamplerOsc(me.buffer, freq) : hb.makeSamplerLoopOsc(me.buffer, freq);
+            vox._env = hb.makeGain();
+
+            vox._osc.connect(vox._env);
+            hb.adsrStart(vox._env.gain, me._getEnv(1));
+
+            vox._env.connect(me._vol);
+
+            vox.noteOff = function () {
+                var env = me._getEnv(1);
+                hb.adsrStop(vox._env.gain, env);
+                vox._osc.stop(hb.ac.currentTime + env.release);
+                // TODO - GC
+            };
+
+            return vox;
+        };
+
+        me.noteOn = function(nn) {
+            console.log('on ' + nn);
+            if (me._voices[nn]) return; // už je
+            me._voices[nn] = me._makeVoice(nn);
+        };
+
+        me.noteOff = function(nn) {
+            console.log('off ' + nn);
+            if (!me._voices[nn]) return; // už není
+            me._voices[nn].noteOff();
+            delete me._voices[nn];
+        };
+
+
+        me.panic = function() {
+           console.log('PANIC at the disco!');
+            for (var nn in me._voices) {
+                hb.setNow(me._voices[nn]._env.gain, 0);
+                me._voices[nn]._osc.stop(hb.now());
+                delete me._voices[nn];
+            }
+            // me._vol.gain.setValueAtTime(0, me._ac.currentTime);
+        };
+
+        return me;
+    };
+
+    ub.on("power","click",  function(ev){
+        ub.stop(ev);
+        ub.addClass("box_welcome", 'ub-hidden');
+        ub.delClass("form", 'ub-hidden');
+
+        ub.gebi('form').reset();
+        hb.start();
+
+        tape = hb.TapeRecorder();
+
+        bus = hb.MixStrip();
+        hb.chnget(bus, 'hi', 'bus_hi');
+        hb.chnget(bus, 'low', 'bus_low');
+        hb.chnget(bus, 'mid', 'bus_mid');
+        hb.chnget(bus, 'pan', 'bus_pan');
+        hb.chnget(bus, 'reverb', 'bus_reverb');
+        hb.chnget(bus, 'vol', 'bus_vol');
+
+        hb.chain(bus.output, tape.input);
+        hb.chain(tape.output, hb.ac.destination);
+        hb.chain(bus.output, hb.ac.destination);
+
+        window.sk = sk1(bus.input);
+        hb.chnget(sk, 'vol', 'vol');
+        hb.chnget(sk, 'attack', 'sk1_attack');
+        hb.chnget(sk, 'decay', 'sk1_decay');
+        hb.chnget(sk, 'sustain', 'sk1_sustain');
+        hb.chnget(sk, 'release', 'sk1_release');
+        keyboardMidiWrap('keyboard3', 'select_midi_in3', sk);
+
+        var violin = 'UklGRsACAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YZwCAABGAFAAZQBpAGsAYQBdAG4AXQBjABAAbgC4AL4AtgDEALUAsAC4AOQAJgErAf4AJwFWATsDfgThATD9d/gG9aXykPFL8T7xivEH8ofyQvPV8030GPXf9ZL2z/Yb95/3Wfjr+F75z/ks+sX69vpT+8r7Qvy9/CL9Qf2p/SP+hP64/hH/R/93/9n/YAB2AJ4AzQAhAZoBuQHSAS0CQQJnAq0CAwNhA6EDmwPCA+gDGwRKBGAEiAS8BKkE2AQ0BTcFRAVqBUIFkgXbBbcF1gXSBdcFAAYBBukF4QUEBrcEMwLrAxkKTBGlFjoaXRxxHbMdcx0FHXIcXBuqGvAZJhlbGJwX5RYQFmEVsBTfEyMTOxK0ESwRTxDDDzEPnw76DW8N9gw/DFQLNQuyClUK2AlBCb0IQgjSBzgHsQaHBiMGpQVWBf0ErQQbBKoDYwPcAo0CUQIQAq0BhgEtAdcArwAYALr/gP9p/1H/v/52/nf+NP7P/aH9m/1Q/e/82vzu/Jz8XfxA/O/7c/yA/Az73fgz9wT23PQu9LTziPOO87nzs/PX8wD0HvQ69Ev0uvTS9On0/PQ89Uv1ifWQ9cH1BfYg9k72SvaW9rr21vYA9xn3I/dB93/3s/fL99f32/f/9w/4X/iY+Nz49PjT+Pv4FflA+X35fvmt+dL5GvoV+vX5Gfo4+iL6Wfqx+rL6xfrm+vD6JPtJ+3b7lfua+5D7hvuH+5j75PsJ/BL8MvyY/I/8h/zT/Cj9K/3z/Gn9Sf1A/Uz9UP1p/Zj9i/2N/aP9zP0G/mb+H/4e/mX+Vv4X/hT+Kv5B/kz+q/6n/vf+7P7r/vD+Cv/+/jT/Nv8u/zX/cP96/4T/fP+q/8f/4f+u/4j/lv/A/9D/7/9BAG8ANgAFAA==';
+        hb.ac.decodeAudioData(_base64ToArrayBuffer(violin), function (buffer) {
+            sk.buffer = buffer;
+            showWave(buffer);
+        });
+
+        ub.on('sin', 'click', function (ev) {
+            ub.stop(ev);
+            sk.buffer = hb.generateWaveformBuffer(hb.generators.sin);
+            showWave(sk.buffer);
+        });
+
+        ub.on('sqr', 'click', function (ev) {
+            ub.stop(ev);
+            sk.buffer = hb.generateWaveformBuffer(hb.generators.sqr);
+            showWave(sk.buffer);
+        });
+
+        ub.on('pwm', 'click', function (ev) {
+            ub.stop(ev);
+            sk.buffer = hb.generateWaveformBuffer(hb.generators.pulse, {width: 0.2});
+            showWave(sk.buffer);
+        });
+
+        var noisefunc = function(n) {
+            return Math.random() * 2 - 1;
+        };
+
+        ub.on('noise', 'click', function (ev) {
+            ub.stop(ev);
+            sk.buffer = hb.generateWaveformBuffer(noisefunc, {}, 2 * hb.ac.sampleRate);
+            showWave(sk.buffer);
+        });
+
+        ub.on('saw', 'click', function (ev) {
+            ub.stop(ev);
+            sk.buffer = hb.generateWaveformBuffer(hb.generators.saw);
+            showWave(sk.buffer);
+        });
+
+        ub.on('tri', 'click', function (ev) {
+            ub.stop(ev);
+            sk.buffer = hb.generateWaveformBuffer(hb.generators.triangle);
+            showWave(sk.buffer);
+        });
+
+        var triasin = function(n) {
+            if (n < 0.25) return n * -4;
+            if (n==0.25) return 1;
+            return Math.sin(n * 6);
+        };
+
+        ub.on('triasin', 'click', function (ev) {
+            ub.stop(ev);
+            sk.buffer = hb.generateWaveformBuffer(triasin);
+            showWave(sk.buffer);
+        });
+
+        var triasin2 = function(n) {
+            if (n < 0.25) return n * -2;
+            if (n==0.25) return 1;
+            return Math.sin(n * 6);
+        };
+
+        ub.on('triasin2', 'click', function (ev) {
+            ub.stop(ev);
+            sk.buffer = hb.generateWaveformBuffer(triasin2);
+            showWave(sk.buffer);
+        });
+
+
+        var cirkule = function(n) {
+            return n * hb.generators.sin(n) + (0.3 * Math.random()); // ozubený sinus
+        };
+
+        ub.on('cirkule', 'click', function (ev) {
+            ub.stop(ev);
+            sk.buffer = hb.generateWaveformBuffer(cirkule);
+            showWave(sk.buffer);
+        });
+
+        var metalik = function(n) {
+            var sinfunc = hb.generators.sin;
+            return hb.clamp(-0.9, ( sinfunc(n) + sinfunc(n * 6) ) / 2, 0.9); // ořezaná vícevlnka
+        };
+
+        ub.on('metalik', 'click', function (ev) {
+            ub.stop(ev);
+            sk.buffer = hb.generateWaveformBuffer(metalik);
+            showWave(sk.buffer);
+        });
+
+        var unowave = function(n) {
+            var p = ub.gebi('unowave').value;
+            // 0 = triangle
+            // 43 - saw
+            // 86 - square
+            // 127 - pulse 10%
+
+            var trianglefunc = hb.generators.triangle;
+            var sawfunc = hb.generators.saw;
+            var sqrfunc = hb.generators.sqr;
+            if (p==0) return trianglefunc(n);
+            if (p > 1 && p < 43) return (trianglefunc(n) * (1-(p / 42))) + (sawfunc(n) * (p / 42));
+            if (p==43) return sawfunc(n);
+            if (p > 43 && p < 86) return (sawfunc(n) * (1-((p - 42) / 42))) + (sqrfunc(n) * ((p - 42) / 42));
+            if (p==86) return sqrfunc(n);
+            if (p > 86) {
+                var pw = 0.5 - ((p-86) / 86);
+                // console.log(pw);
+                if (n > pw) return -0.8;
+                return 0.8;
+            };
+        };
+
+        ub.on('unowave', 'input', function (ev) {
+
+            sk.buffer = hb.generateWaveformBuffer(unowave);
+            showWave(sk.buffer);
+        });
+
+
+        ub.on('noisey', 'click', function (ev) {
+            ub.stop(ev);
+            sk.buffer = hb.generateWaveformBuffer(function (n) {
+                return Math.random() * 2 - 1;
+            });
+            showWave(sk.buffer);
+        });
+
+        var sin = hb.generators.sin;
+
+        function organwave(n, p) {
+            var out = 0;
+            if (p.org1) out += sin(n) / 4;
+            if (p.org2) out += sin(n * 2) /4;
+            if (p.org3) out += sin(n * 3) /4;
+            if (p.org4) out += sin(n * 4) /4;
+
+            return out;
+        }
+
+        ub.on('organ', 'click', function (ev) {
+            ub.stop(ev);
+
+            sk.buffer = hb.generateWaveformBuffer(organwave, {
+                org1: ub.gebi('org1').checked,
+                org2: ub.gebi('org2').checked,
+                org3: ub.gebi('org3').checked,
+                org4: ub.gebi('org4').checked,
+            }, hb.midi2cps(60) * 2);
+            showWave(sk.buffer);
+        });
+
+        ub.on('choose_sample', 'change', function (ev) {
+            var file = ev.target.files[0];
+            if (!file) {
+                return;
+            }
+            var reader = new FileReader();
+            reader.onload = function(loadEvent) {
+                if (loadEvent.loaded < 500*1024) {
+                    // less then 500kB
+                    hb.ac.decodeAudioData(reader.result, function (buffer) {
+                        sk.buffer = buffer;
+
+                        sk.once = true;
+
+                        showWave(buffer);
+                    });
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
+        });
+
+        ub.on('record', 'click', function (ev) {
+           ub.stop(ev);
+           if (tape.status=='standby') {
+               tape.record();
+           }
+        });
+
+        ub.on('recording_download', 'click', function (ev) {
+           ub.stop(ev);
+           tape.downloadFile();
+        });
+
+        ub.on('stop', 'click', function (ev) {
+            ub.stop(ev);
+            if (tape.status=='recording') {
+                ub.delClass('recording_download', 'ub-hidden');
+            }
+            tape.stop();
+
+        });
+
+        ub.on('play', 'click', function (ev) {
+            ub.stop(ev);
+            if (tape.status=='standby') {
+                tape.play();
+            }
+        });
+
+
+    });
+</script>
+
+<script src="//million.svita.cz/millions_v1.js"></script>
+</body>
+</html>
