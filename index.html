@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SK1</title>
+    <title>akwf playground</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/uboot.css">
     <link rel="stylesheet" href="css/gh-fork-ribbon.css">
@@ -18,6 +18,10 @@
         body {
             font-family: "Lucida Console", monospace;
             background-color: plum;
+        }
+
+        .ub-container {
+            max-width: 45em;
         }
 
         .ub-box {
@@ -41,16 +45,15 @@
 </head>
 <body>
 
-<a class="github-fork-ribbon" href="https://github.com/severak/cyber-music-studio" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
+<a class="github-fork-ribbon" href="https://github.com/severak/akwf-playground" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
 
 <div class="ub-container">
 
-    <h1>sample propulsion laboratory</h1>
+    <h1>akwf playground</h1>
 
     <div class="ub-box" id="box_welcome">
-        <img src="img/preview.png" class="ub-fit-img">
-        <p>This is part of beta version of Cyber Music Studio™. It's not finished yet and can be broken at any moment.</p>
-        <p>Feel free to test it and report bugs <a href="https://github.com/severak/cyber-music-studio/issues" target="_blank">here</a>.</p>
+        <p>This is experimental sampler for testing various waveforms from <a href="https://www.adventurekid.se/akrt/waveforms/">Adventure Kid Waveforms</a>. </p>
+        <p>See <a href="http://www.adventurekid.se/AKRTfiles/AKWF/view/waveforms_index.html">graphics guide</a> for what's in. </p>
         <center><button id="power" class="ub-button"><big>OK</big></button></center>
     </div>
     <br><br>
@@ -61,7 +64,7 @@
         <div class="ub-box" id="box_traveller" style="background-color: lightseagreen">
             <div class="ub-cols">
                 <div class="ub-same" style="text-align: center">
-                    <canvas style="width: 440px; height: 40px; background-color: white" id="waveform"></canvas>
+                    <canvas style="width: 600px; height: 40px; background-color: white" id="waveform"></canvas>
                 </div>
             </div>
 
@@ -82,50 +85,18 @@
                 </div>
             </div>
 
-            <div><strong>SIMPLE WAVEFORMS</strong></div>
-
-            <div class="ub-cols">
-                <div class="ub-same">
-                    <button id="sin">SIN</button>
-                    <button id="sqr">SQR</button>
-                    <button id="pwm">PWM</button>
-                    <button id="noise">NOISE</button>
-                    <button id="saw">SAW</button>
-                    <button id="tri">TRIANGLE</button>
-                    <button id="triasin">TRIASIN</button>
-                    <button id="triasin2">TRIASIN 1/2</button>
-                    <button id="cirkule">CIRKULE</button>
-                    <button id="metalik">METALIK</button>
-                    <button id="noisey">NOISEY</button>
-                </div>
-            </div>
-
-            <div><strong>COMPLEX WAVEFORMS</strong></div>
-
-            <div class="ub-cols">
-                <div class="ub-same">
-                    UNO SYNTH WAVEFORM:
-                    <input type="range" id="unowave" min="0" max="127" step="1">
-                </div>
-            </div>
+            <div><strong>SELECT WAVEFORM</strong></div>
             <div>
-                <button id="organ">GENERATE ORGAN SOUND</button>
+                <select id="sel">
+                    <optgroup label="AKWF_0001">
+                        <option value="AKWF/AKWF_0001/AKWF_0001.wav">AKWF_0001.wav</option>
+                        <option value="AKWF/AKWF_0001/AKWF_0002.wav">AKWF_0002.wav</option>
+                    </optgroup>
+                    <optgroup label="AKWF_overtone">
+                        <option value="AKWF/AKWF_overtone/AKWF_overtone_0001.wav">AKWF_overtone_0001.wav</option>
+                    </optgroup>
+                </select>
             </div>
-
-            <div class="ub-cols">
-                <div class="ub-same"><label><input type="checkbox" id="org1" > 16"</label></div>
-                <div class="ub-same"><label><input type="checkbox" id="org2" > 8"</label></div>
-                <div class="ub-same"><label><input type="checkbox" id="org3" > 5 ⅓"</label></div>
-                <div class="ub-same"><label><input type="checkbox" id="org4" > 4"</label></div>
-            </div>
-
-            <div><strong>CUSTOM SOUND</strong></div>
-
-            <div>
-                <input type="file" accept="audio/wav" id="choose_sample">
-            </div>
-
-            <div><strong>COMMON</strong></div>
 
             <div class="ub-cols">
                 <div class="ub-same" style="text-align: center">
@@ -176,7 +147,7 @@
 
         </div>
 
-    <p>part of <a href="index.html">Cyber Music Studio™</a></p>
+    <p>forked from <a href="index.html">Cyber Music Studio™</a></p>
 
     </form>
 </div>
@@ -206,16 +177,16 @@
         var amp = 1;
         var data = buffer.getChannelData(0);
         var ctx = ub.gebi('waveform').getContext("2d");
-        ub.gebi('waveform').width = 440;
+        ub.gebi('waveform').width = 600;
         ub.gebi('waveform').height = 40;
         ctx.fillStyle = '#000';
 
-        ctx.fillRect(0,0,440,80);
+        ctx.fillRect(0,0,600,80);
 
         ctx.strokeStyle = '#fff';
         ctx.beginPath();
         ctx.moveTo(0, 20);
-        ctx.lineTo(440, 20);
+        ctx.lineTo(600, 20);
         ctx.stroke();
 
         ctx.strokeStyle = '#00ff00';
@@ -363,176 +334,6 @@
             showWave(buffer);
         });
 
-        ub.on('sin', 'click', function (ev) {
-            ub.stop(ev);
-            sk.buffer = hb.generateWaveformBuffer(hb.generators.sin);
-            showWave(sk.buffer);
-        });
-
-        ub.on('sqr', 'click', function (ev) {
-            ub.stop(ev);
-            sk.buffer = hb.generateWaveformBuffer(hb.generators.sqr);
-            showWave(sk.buffer);
-        });
-
-        ub.on('pwm', 'click', function (ev) {
-            ub.stop(ev);
-            sk.buffer = hb.generateWaveformBuffer(hb.generators.pulse, {width: 0.2});
-            showWave(sk.buffer);
-        });
-
-        var noisefunc = function(n) {
-            return Math.random() * 2 - 1;
-        };
-
-        ub.on('noise', 'click', function (ev) {
-            ub.stop(ev);
-            sk.buffer = hb.generateWaveformBuffer(noisefunc, {}, 2 * hb.ac.sampleRate);
-            showWave(sk.buffer);
-        });
-
-        ub.on('saw', 'click', function (ev) {
-            ub.stop(ev);
-            sk.buffer = hb.generateWaveformBuffer(hb.generators.saw);
-            showWave(sk.buffer);
-        });
-
-        ub.on('tri', 'click', function (ev) {
-            ub.stop(ev);
-            sk.buffer = hb.generateWaveformBuffer(hb.generators.triangle);
-            showWave(sk.buffer);
-        });
-
-        var triasin = function(n) {
-            if (n < 0.25) return n * -4;
-            if (n==0.25) return 1;
-            return Math.sin(n * 6);
-        };
-
-        ub.on('triasin', 'click', function (ev) {
-            ub.stop(ev);
-            sk.buffer = hb.generateWaveformBuffer(triasin);
-            showWave(sk.buffer);
-        });
-
-        var triasin2 = function(n) {
-            if (n < 0.25) return n * -2;
-            if (n==0.25) return 1;
-            return Math.sin(n * 6);
-        };
-
-        ub.on('triasin2', 'click', function (ev) {
-            ub.stop(ev);
-            sk.buffer = hb.generateWaveformBuffer(triasin2);
-            showWave(sk.buffer);
-        });
-
-
-        var cirkule = function(n) {
-            return n * hb.generators.sin(n) + (0.3 * Math.random()); // ozubený sinus
-        };
-
-        ub.on('cirkule', 'click', function (ev) {
-            ub.stop(ev);
-            sk.buffer = hb.generateWaveformBuffer(cirkule);
-            showWave(sk.buffer);
-        });
-
-        var metalik = function(n) {
-            var sinfunc = hb.generators.sin;
-            return hb.clamp(-0.9, ( sinfunc(n) + sinfunc(n * 6) ) / 2, 0.9); // ořezaná vícevlnka
-        };
-
-        ub.on('metalik', 'click', function (ev) {
-            ub.stop(ev);
-            sk.buffer = hb.generateWaveformBuffer(metalik);
-            showWave(sk.buffer);
-        });
-
-        var unowave = function(n) {
-            var p = ub.gebi('unowave').value;
-            // 0 = triangle
-            // 43 - saw
-            // 86 - square
-            // 127 - pulse 10%
-
-            var trianglefunc = hb.generators.triangle;
-            var sawfunc = hb.generators.saw;
-            var sqrfunc = hb.generators.sqr;
-            if (p==0) return trianglefunc(n);
-            if (p > 1 && p < 43) return (trianglefunc(n) * (1-(p / 42))) + (sawfunc(n) * (p / 42));
-            if (p==43) return sawfunc(n);
-            if (p > 43 && p < 86) return (sawfunc(n) * (1-((p - 42) / 42))) + (sqrfunc(n) * ((p - 42) / 42));
-            if (p==86) return sqrfunc(n);
-            if (p > 86) {
-                var pw = 0.5 - ((p-86) / 86);
-                // console.log(pw);
-                if (n > pw) return -0.8;
-                return 0.8;
-            };
-        };
-
-        ub.on('unowave', 'input', function (ev) {
-
-            sk.buffer = hb.generateWaveformBuffer(unowave);
-            showWave(sk.buffer);
-        });
-
-
-        ub.on('noisey', 'click', function (ev) {
-            ub.stop(ev);
-            sk.buffer = hb.generateWaveformBuffer(function (n) {
-                return Math.random() * 2 - 1;
-            });
-            showWave(sk.buffer);
-        });
-
-        var sin = hb.generators.sin;
-
-        function organwave(n, p) {
-            var out = 0;
-            if (p.org1) out += sin(n) / 4;
-            if (p.org2) out += sin(n * 2) /4;
-            if (p.org3) out += sin(n * 3) /4;
-            if (p.org4) out += sin(n * 4) /4;
-
-            return out;
-        }
-
-        ub.on('organ', 'click', function (ev) {
-            ub.stop(ev);
-
-            sk.buffer = hb.generateWaveformBuffer(organwave, {
-                org1: ub.gebi('org1').checked,
-                org2: ub.gebi('org2').checked,
-                org3: ub.gebi('org3').checked,
-                org4: ub.gebi('org4').checked,
-            }, hb.midi2cps(60) * 2);
-            showWave(sk.buffer);
-        });
-
-        ub.on('choose_sample', 'change', function (ev) {
-            var file = ev.target.files[0];
-            if (!file) {
-                return;
-            }
-            var reader = new FileReader();
-            reader.onload = function(loadEvent) {
-                if (loadEvent.loaded < 500*1024) {
-                    // less then 500kB
-                    hb.ac.decodeAudioData(reader.result, function (buffer) {
-                        sk.buffer = buffer;
-
-                        sk.once = true;
-
-                        showWave(buffer);
-                    });
-                }
-            };
-
-            reader.readAsArrayBuffer(file);
-        });
-
         ub.on('record', 'click', function (ev) {
            ub.stop(ev);
            if (tape.status=='standby') {
@@ -559,6 +360,22 @@
             if (tape.status=='standby') {
                 tape.play();
             }
+        });
+
+        ub.on('sel', 'change', function (ev) {
+            // console.log(ub.gebi('sel').value);
+            fetch(ub.gebi('sel').value)
+                .then((response) => {
+                    // console.log(response);
+                    return response.arrayBuffer();
+                })
+                .then((buffer) => {
+                    // console.log(buffer);
+                    hb.ac.decodeAudioData(buffer, function (buffer) {
+                        showWave(buffer);
+                        sk.buffer = buffer;
+                    });
+                });
         });
 
 
