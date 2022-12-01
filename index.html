@@ -222,6 +222,7 @@
 
         me.once = false;
         me.buffer = hb.ac.createBuffer(1, hb.ac.sampleRate * 1, hb.ac.sampleRate);
+        me.baseNote = 62;
 
         me._ac = hb.ac;
         if (!out) out = hb.ac.destination;
@@ -253,7 +254,7 @@
             var ac = hb.ac;
             var freq = hb.midi2cps(nn);
             var vox = {};
-            vox._osc = me.once ? hb.makeSamplerOsc(me.buffer, freq) : hb.makeSamplerLoopOsc(me.buffer, freq);
+            vox._osc = me.once ? hb.makeSamplerOsc(me.buffer, freq, hb.midi2cps(me.baseNote)) : hb.makeSamplerLoopOsc(me.buffer, freq, hb.midi2cps(me.baseNote));
             vox._env = hb.makeGain();
 
             vox._osc.connect(vox._env);
