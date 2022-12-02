@@ -17,7 +17,22 @@
     <style>
         body {
             font-family: "Lucida Console", monospace;
-            background-color: plum;
+            background-color: #000;
+            background-image: url("wavetable.png");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        h1 {
+            color: yellowgreen;
+        }
+
+        .footer, .footer a {
+            color: yellowgreen;
+        }
+
+        hr {
+            border: 1px solid black;
         }
 
         .ub-container {
@@ -28,14 +43,11 @@
             background-color: lightyellow;
         }
 
-        a { color: black; text-decoration-style: dashed; text-decoration-thickness: 1px; }
-
-        #scope {
-            padding: 0;
-            width: 100%;
-            height: 80px;
-            background-color: #000;
+        .pad {
+            padding: 1em;
         }
+
+        a { color: black; text-decoration-style: dashed; text-decoration-thickness: 1px; }
 
         #recording_download {
             color: black;
@@ -63,7 +75,7 @@
     <form class="ub-form ub-hidden" id="form">
         <div class="ub-box" id="box_traveller" style="background-color: lightseagreen">
             <div class="ub-cols">
-                <div>
+                <div class="pad">
 
                     <strong>WAVEFORM</strong>
 
@@ -4565,7 +4577,8 @@
                 <div>
                     <strong>PREVIEW</strong>
 
-                    <canvas style="width: 600px; height: 40px; background-color: white" id="waveform"></canvas>
+                    <canvas style="width: 600px; height: 100px; background-color: white" id="waveform"></canvas>
+                    <p id="waveform_name">&lt;--- please select a sound</p>
 
                     <div><strong>ENVELOPE</strong></div>
 
@@ -4584,9 +4597,14 @@
                         </div>
                     </div>
 
-                    <strong>KEYBOARD</strong>
+                    <div>
+                        <p></p>
+                        <strong>KEYBOARD</strong>
+                        <p>Use computer keyboard or following widget:
+                        <div id="keyboard3"></div>
+                        or MIDI input: <select id="select_midi_in3"></select></p>
+                    </div>
 
-                    <div id="keyboard3"></div>
 
                     <div><strong>MIXING &amp; RECORDING</strong></div>
 
@@ -4618,14 +4636,9 @@
                         <div class="ub-same"><a href="#" id="recording_download" class="ub-hidden">DOWNLOAD IT</a></div>
                     </div>
 
-                    <div class="ub-cols">
-                        <div class="ub-same">
+                    <div>
                             VOL
                             <input type="range" id="vol" min="0" max="1" step="0.01" value="0.5">
-                        </div>
-                        <div class="ub-same">
-                            MIDI input: <select id="select_midi_in3"></select>
-                        </div>
                     </div>
 
                     <hr>
@@ -4641,7 +4654,7 @@
 
         </div>
 
-    <p>forked from <a href="index.html">Cyber Music Studio™</a></p>
+    <p class="footer">forked from <a href="https://severak.github.io/cyber-music-studio/">Cyber Music Studio™</a></p>
 
     </form>
 </div>
@@ -4652,8 +4665,54 @@
         var kbd = JZZ.input.Kbd({ at:keyboardElemId, pos:'N', wl: 50, ww:21, bl: 25, bw:12, from:'F4', to:'C7' });
         var midiIn = JZZ.gui.SelectMidiIn({ at: midiSelectorId });
         kbd.connect(function (msg) {
-            hb.midi2call(msg, synth);
+            hb.midi2call(msg, synth)
         });
+
+        kbd.getKey('F4').setInnerHTML('Z');
+        kbd.getKey('C5').setInnerHTML('B');
+        kbd.getKey('F5').setInnerHTML('Q');
+        kbd.getKey('C6').setInnerHTML('T');
+        kbd.getKey('F6').setInnerHTML('I');
+        kbd.getKey('C7').setInnerHTML(']');
+
+        var ascii = JZZ.input.ASCII({
+            // lower row:
+            Z: 'F4',
+            S: 'F#4',
+            X: 'G4',
+            D: 'G#4',
+            C: 'A4',
+            F: 'A#4',
+            V: 'B4',
+            B: 'C5',
+            H: 'C#5',
+            N: 'D5',
+            J: 'D#5',
+            M: 'E5',
+            // upper row:
+            Q: 'F5',
+            2: 'F#5',
+            W: 'G5',
+            3: 'G#5',
+            E: 'A5',
+            4: 'A#5',
+            R: 'B5',
+            T: 'C6',
+            6: 'C#6',
+            Y: 'D6',
+            7: 'D#6',
+            U: 'E6',
+            I: 'F6',
+            9: 'F#6',
+            O: 'G6',
+            0: 'G#6',
+            P: 'A6',
+            '%': 'A#6',
+            '[': 'B6',
+            ']': 'C7'
+        });
+
+        ascii.connect(kbd);
 
         // handles all the selection stuff
         midiIn.onSelect = function(name) {
@@ -4672,22 +4731,22 @@
         var data = buffer.getChannelData(0);
         var ctx = ub.gebi('waveform').getContext("2d");
         ub.gebi('waveform').width = 600;
-        ub.gebi('waveform').height = 40;
+        ub.gebi('waveform').height = 100;
         ctx.fillStyle = '#000';
 
-        ctx.fillRect(0,0,600,80);
+        ctx.fillRect(0,0,600,100);
 
         ctx.strokeStyle = '#fff';
         ctx.beginPath();
-        ctx.moveTo(0, 20);
-        ctx.lineTo(600, 20);
+        ctx.moveTo(0, 50);
+        ctx.lineTo(600, 50);
         ctx.stroke();
 
         ctx.strokeStyle = '#00ff00';
         ctx.beginPath();
-        ctx.moveTo(0, (data[0] * 20 * amp) + 20);
+        ctx.moveTo(0, (data[0] * 50 * amp) + 50);
         for (var n = 0; n < buffer.length; n++) {
-            var y = (data[n] * 20 * amp) + 20;
+            var y = (data[n] * 50 * amp) + 50;
             ctx.lineTo(n, y);
         }
         ctx.stroke();
@@ -4869,6 +4928,8 @@
                     hb.ac.decodeAudioData(buffer, function (buffer) {
                         showWave(buffer);
                         sk.buffer = buffer;
+
+                        ub.gebi('waveform_name').innerText = ub.gebi('sel').value;
                     });
                 });
         });
